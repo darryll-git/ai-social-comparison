@@ -93,8 +93,12 @@ def compute_wilson_ci(k: int, n: int, confidence: float = 0.95) -> tuple[float, 
     center = (p + (z ** 2) / (2 * n)) / denominator
     margin = (z * math.sqrt((p * (1.0 - p) / n) + (z ** 2) / (4 * (n ** 2)))) / denominator
 
-    ci_lower = max(0.0, center - margin)
-    ci_upper = min(1.0, center + margin)
+    ci_lower = max(0.0, float(center - margin))
+    ci_upper = min(1.0, float(center + margin))
+    if k == 0:
+        ci_lower = 0.0
+    if k == n:
+        ci_upper = 1.0
     return p, ci_lower, ci_upper
 
 
@@ -120,7 +124,13 @@ def load_dataset(file_path: str | None = None) -> pd.DataFrame:
             raise FileNotFoundError(f"Specified CSV file not found: {file_path}")
     else:
         candidates = sorted(
-            glob.glob("results/trials_*.csv") + glob.glob("results/calibration_*.csv"),
+            list(
+                set(
+                    glob.glob("results/trials_*.csv")
+                    + glob.glob("results/calibration_*.csv")
+                    + glob.glob("results/*.csv")
+                )
+            ),
             key=os.path.getmtime,
             reverse=True,
         )

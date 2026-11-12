@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this benchmark or experimental methodology in your research, please cite it as below."
+authors:
+  - family-names: "AI Social Comparison Contributors"
+title: "ai-social-comparison: Investigating Inequity Aversion and Social Comparison in Large Language Models"
+version: 0.1.0
+date-released: 2026-11-12
+url: "https://github.com/your-username/ai-social-comparison"
+keywords:
+  - large language models
+  - behavioral economics
+  - inequity aversion
+  - social comparison
+  - multi-agent systems
+  - ai alignment

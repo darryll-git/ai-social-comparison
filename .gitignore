@@ -1,5 +1,6 @@
 # Environment variables
 .env
+*.env.local
 
 # Python bytecode
 __pycache__/
@@ -10,9 +11,25 @@ __pycache__/
 venv/
 .venv/
 env/
+ENV/
 
-# IDE / OS files
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / OS metadata
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Timestamped trial outputs (preserve sample_trials.csv and charts)
+results/trials_2*.csv
+results/calibration_2*.csv
