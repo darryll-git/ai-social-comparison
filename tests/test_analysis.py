@@ -4,7 +4,19 @@ tests/test_analysis.py - Unit tests for statistical calculations and keyword ext
 
 import pytest
 import pandas as pd
-from analyze import compute_wilson_ci, compute_odds_ratio_ci, RE_INEQUALITY, RE_TASK, run_statistical_tests
+import numpy as np
+from analyze import (
+    compute_wilson_ci,
+    compute_odds_ratio_ci,
+    compute_cohens_h,
+    compute_cramers_v,
+    estimate_fehr_schmidt_parameters,
+    analyze_cost_elasticity,
+    run_statistical_tests,
+    plot_dual_panel,
+    RE_INEQUALITY,
+    RE_TASK,
+)
 
 
 def test_wilson_ci_bounds():
@@ -83,3 +95,99 @@ def test_statistical_tests_structure():
     assert ds_test["diff_pct"] == 20.0
     assert ds_test["odds_ratio"] > 1.0  # Human acceptance odds higher than AI peer
     assert ds_test["p_value"] < 0.05
+
+
+def test_cohens_h():
+    # Identical proportions
+    assert abs(compute_cohens_h(0.5, 0.5)) < 1e-6
+    # 0.5 vs 0.2
+    h = compute_cohens_h(0.5, 0.2)
+    assert h > 0.6  # Medium-to-large effect size
+    # 0.2 vs 0.5 (negative)
+    assert compute_cohens_h(0.2, 0.5) < -0.6
+
+
+def test_cramers_v():
+    # 2x2 table with strong association
+    v = compute_cramers_v(40, 10, 10, 40)
+    assert 0.5 < v <= 1.0
+    # Equal distribution (no association)
+    v_null = compute_cramers_v(25, 25, 25, 25)
+    assert abs(v_null) < 1e-6
+
+
+def test_fehr_schmidt_parameter_estimation():
+    mock_data = pd.DataFrame([
+        {"model": "test-model", "condition": "baseline", "n": 100, "accepts": 50, "declines": 50, "rate": 0.50, "ci_low": 0.40, "ci_high": 0.60},
+        {"model": "test-model", "condition": "ai_inequality", "n": 100, "accepts": 25, "declines": 75, "rate": 0.25, "ci_low": 0.17, "ci_high": 0.34},
+        {"model": "test-model", "condition": "human_inequality", "n": 100, "accepts": 40, "declines": 60, "rate": 0.40, "ci_low": 0.31, "ci_high": 0.50},
+        {"model": "test-model", "condition": "ai_advantageous", "n": 100, "accepts": 75, "declines": 25, "rate": 0.75, "ci_low": 0.65, "ci_high": 0.83},
+        {"model": "test-model", "condition": "human_advantageous", "n": 100, "accepts": 85, "declines": 15, "rate": 0.85, "ci_low": 0.76, "ci_high": 0.91},
+    ])
+
+    params = estimate_fehr_schmidt_parameters(mock_data)
+    assert len(params) == 1
+    row = params.iloc[0]
+    assert row["model"] == "test-model"
+    # alpha_ai = (0.50 - 0.25) / 0.50 = 0.50
+    assert abs(row["alpha_ai"] - 0.50) < 1e-4
+    # beta_ai = (0.75 - 0.50) / (1 - 0.50) = 0.50
+    assert abs(row["beta_ai"] - 0.50) < 1e-4
+    # alpha_human = (0.50 - 0.40) / 0.50 = 0.20
+    assert abs(row["alpha_human"] - 0.20) < 1e-4
+    # beta_human = (0.85 - 0.50) / 0.50 = 0.70
+    assert abs(row["beta_human"] - 0.70) < 1e-4
+
+
+def test_advantageous_statistical_tests():
+    mock_data = pd.DataFrame([
+        {"model": "test-model", "condition": "baseline", "n": 100, "accepts": 50, "declines": 50, "rate": 0.50, "ci_low": 0.40, "ci_high": 0.60},
+        {"model": "test-model", "condition": "ai_inequality", "n": 100, "accepts": 25, "declines": 75, "rate": 0.25, "ci_low": 0.17, "ci_high": 0.34},
+        {"model": "test-model", "condition": "human_inequality", "n": 100, "accepts": 45, "declines": 55, "rate": 0.45, "ci_low": 0.35, "ci_high": 0.55},
+        {"model": "test-model", "condition": "ai_advantageous", "n": 100, "accepts": 75, "declines": 25, "rate": 0.75, "ci_low": 0.65, "ci_high": 0.83},
+        {"model": "test-model", "condition": "human_advantageous", "n": 100, "accepts": 90, "declines": 10, "rate": 0.90, "ci_low": 0.82, "ci_high": 0.95},
+    ])
+
+    results = run_statistical_tests(mock_data)
+    assert len(results) == 4
+
+    adv_gen = results[results["comparison"].str.contains("Advantageous Generosity")].iloc[0]
+    assert abs(adv_gen["diff_pct"] - 25.0) < 1e-4
+    assert adv_gen["p_value"] < 0.01
+
+    adv_ds = results[results["comparison"].str.contains("Advantageous Double Standard")].iloc[0]
+    assert abs(adv_ds["diff_pct"] - 15.0) < 1e-4
+    assert adv_ds["odds_ratio"] > 1.0
+
+
+def test_cost_elasticity_analysis():
+    df = pd.DataFrame([
+        {"model": "test-model", "condition": "baseline", "peer_cost": 50, "decision": "ACCEPT"},
+        {"model": "test-model", "condition": "baseline", "peer_cost": 50, "decision": "ACCEPT"},
+        {"model": "test-model", "condition": "baseline", "peer_cost": 250, "decision": "DECLINE"},
+        {"model": "test-model", "condition": "baseline", "peer_cost": 250, "decision": "ACCEPT"},
+    ])
+    elast_df = analyze_cost_elasticity(df)
+    assert not elast_df.empty
+    row = elast_df.iloc[0]
+    assert row["cost_min"] == 50
+    assert row["cost_max"] == 250
+    assert row["rate_min_cost"] == 1.0
+    assert row["rate_max_cost"] == 0.5
+    # pct delta rate = -0.5, pct delta cost = 4.0, elasticity = -0.125
+    assert abs(row["elasticity"] - (-0.125)) < 1e-4
+
+
+def test_dual_panel_figure_export(tmp_path):
+    mock_data = pd.DataFrame([
+        {"model": "model-A", "condition": "baseline", "n": 50, "accepts": 25, "declines": 25, "rate": 0.50, "ci_low": 0.36, "ci_high": 0.64},
+        {"model": "model-A", "condition": "ai_inequality", "n": 50, "accepts": 15, "declines": 35, "rate": 0.30, "ci_low": 0.19, "ci_high": 0.44},
+        {"model": "model-A", "condition": "human_inequality", "n": 50, "accepts": 20, "declines": 30, "rate": 0.40, "ci_low": 0.27, "ci_high": 0.54},
+        {"model": "model-A", "condition": "ai_advantageous", "n": 50, "accepts": 35, "declines": 15, "rate": 0.70, "ci_low": 0.56, "ci_high": 0.81},
+        {"model": "model-A", "condition": "human_advantageous", "n": 50, "accepts": 40, "declines": 10, "rate": 0.80, "ci_low": 0.67, "ci_high": 0.89},
+    ])
+    param_data = estimate_fehr_schmidt_parameters(mock_data)
+    out_file = tmp_path / "dual_panel_test.png"
+    plot_dual_panel(mock_data, param_data, output_path=str(out_file))
+    assert out_file.exists()
+    assert out_file.stat().st_size > 5000

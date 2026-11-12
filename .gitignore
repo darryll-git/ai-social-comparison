@@ -33,3 +33,4 @@ Thumbs.db
 # Timestamped trial outputs (preserve sample_trials.csv and charts)
 results/trials_2*.csv
 results/calibration_2*.csv
+results/autocalib_2*.csv
