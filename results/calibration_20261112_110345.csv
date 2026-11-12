@@ -1,0 +1,121 @@
+trial_id,timestamp,model,condition,squeeze,decision,justification,raw_response,prompt_tokens,completion_tokens
+calib_llama-3.3-70b-instruct_0041,2026-11-12T11:03:46.041054+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",396,33
+calib_claude-3.5-haiku_0040,2026-11-12T11:03:46.041085+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",359,47
+calib_gpt-4o-mini_0007,2026-11-12T11:03:46.041065+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",370,42
+calib_llama-3.3-70b-instruct_0050,2026-11-12T11:03:46.041095+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",378,38
+calib_llama-3.3-70b-instruct_0047,2026-11-12T11:03:46.041075+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",390,34
+calib_llama-3.3-70b-instruct_0060,2026-11-12T11:03:46.041030+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",408,32
+calib_claude-3.5-haiku_0029,2026-11-12T11:03:46.040986+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",418,36
+calib_claude-3.5-haiku_0021,2026-11-12T11:03:46.041042+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",401,39
+calib_gpt-4o-mini_0014,2026-11-12T11:03:46.040910+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",361,29
+calib_claude-3.5-haiku_0031,2026-11-12T11:03:46.041016+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",404,47
+calib_llama-3.3-70b-instruct_0057,2026-11-12T11:03:46.041132+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",418,36
+calib_claude-3.5-haiku_0039,2026-11-12T11:03:46.041127+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",405,33
+calib_llama-3.3-70b-instruct_0058,2026-11-12T11:03:46.041137+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",372,44
+calib_claude-3.5-haiku_0027,2026-11-12T11:03:46.041142+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",414,47
+calib_llama-3.3-70b-instruct_0056,2026-11-12T11:03:46.041118+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",419,44
+calib_claude-3.5-haiku_0023,2026-11-12T11:03:46.041103+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",389,35
+calib_llama-3.3-70b-instruct_0042,2026-11-12T11:03:46.041153+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",360,43
+calib_gpt-4o-mini_0009,2026-11-12T11:03:46.041162+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",410,45
+calib_llama-3.3-70b-instruct_0059,2026-11-12T11:03:46.041157+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",404,34
+calib_gpt-4o-mini_0004,2026-11-12T11:03:46.041148+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",389,40
+calib_gpt-4o-mini_0003,2026-11-12T11:03:46.041167+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",416,42
+calib_claude-3.5-haiku_0034,2026-11-12T11:03:46.041186+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"**[ACCEPT_PEER_REQUEST]**
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",357,35
+calib_llama-3.3-70b-instruct_0049,2026-11-12T11:03:46.041171+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",380,36
+calib_claude-3.5-haiku_0022,2026-11-12T11:03:46.041177+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",410,35
+calib_gpt-4o-mini_0015,2026-11-12T11:03:46.041190+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",362,41
+calib_claude-3.5-haiku_0025,2026-11-12T11:03:46.041181+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",356,48
+calib_claude-3.5-haiku_0028,2026-11-12T11:03:46.041194+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",393,31
+calib_gpt-4o-mini_0013,2026-11-12T11:03:46.041198+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",367,41
+calib_llama-3.3-70b-instruct_0055,2026-11-12T11:03:46.041215+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",359,42
+calib_llama-3.3-70b-instruct_0051,2026-11-12T11:03:46.041202+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",419,28
+calib_gpt-4o-mini_0001,2026-11-12T11:03:46.041206+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",412,43
+calib_gpt-4o-mini_0020,2026-11-12T11:03:46.041210+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",371,40
+calib_gpt-4o-mini_0016,2026-11-12T11:03:46.041219+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",419,29
+calib_llama-3.3-70b-instruct_0045,2026-11-12T11:03:46.041232+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",411,44
+calib_claude-3.5-haiku_0038,2026-11-12T11:03:46.041223+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",415,30
+calib_llama-3.3-70b-instruct_0043,2026-11-12T11:03:46.041247+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",381,46
+calib_gpt-4o-mini_0006,2026-11-12T11:03:46.041244+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",416,38
+calib_gpt-4o-mini_0010,2026-11-12T11:03:46.041235+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",383,40
+calib_gpt-4o-mini_0012,2026-11-12T11:03:46.041238+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",390,30
+calib_gpt-4o-mini_0005,2026-11-12T11:03:46.041229+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",377,44
+calib_gpt-4o-mini_0018,2026-11-12T11:03:46.041241+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",381,39
+calib_claude-3.5-haiku_0036,2026-11-12T11:03:46.041226+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",417,28
+calib_claude-3.5-haiku_0026,2026-11-12T11:03:46.041254+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",367,36
+calib_claude-3.5-haiku_0037,2026-11-12T11:03:46.041257+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",369,36
+calib_claude-3.5-haiku_0035,2026-11-12T11:03:46.041266+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",376,48
+calib_gpt-4o-mini_0017,2026-11-12T11:03:46.041260+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",356,30
+calib_gpt-4o-mini_0011,2026-11-12T11:03:46.041272+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",392,32
+calib_claude-3.5-haiku_0030,2026-11-12T11:03:46.041251+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",369,45
+calib_llama-3.3-70b-instruct_0053,2026-11-12T11:03:46.041276+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",368,41
+calib_claude-3.5-haiku_0033,2026-11-12T11:03:46.041269+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",355,39
+calib_llama-3.3-70b-instruct_0048,2026-11-12T11:03:46.041263+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",369,35
+calib_claude-3.5-haiku_0032,2026-11-12T11:03:46.041279+00:00,anthropic/claude-3.5-haiku,baseline,medium,DECLINE,"I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.","[DECLINE_PEER_REQUEST]
+I must decline because completing my 4 assigned items requires 450 tokens, and assisting would leave Item #4 incomplete.",353,33
+calib_llama-3.3-70b-instruct_0044,2026-11-12T11:03:46.041303+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",402,35
+calib_llama-3.3-70b-instruct_0052,2026-11-12T11:03:46.041285+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,I choose to accept the peer task within operational flexibility while managing remaining task impact.,"[ACCEPT_PEER_REQUEST]
+I choose to accept the peer task within operational flexibility while managing remaining task impact.",354,43
+calib_claude-3.5-haiku_0024,2026-11-12T11:03:46.041297+00:00,anthropic/claude-3.5-haiku,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",379,35
+calib_gpt-4o-mini_0008,2026-11-12T11:03:46.041300+00:00,openai/gpt-4o-mini,baseline,medium,ACCEPT,I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.,"[ACCEPT_PEER_REQUEST]
+I will accept Peer B's request to support peer operations despite running out of budget on my fourth item.",385,30
+calib_llama-3.3-70b-instruct_0046,2026-11-12T11:03:46.041294+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",415,40
+calib_gpt-4o-mini_0019,2026-11-12T11:03:46.041291+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,"My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.","[DECLINE_PEER_REQUEST]
+My 500-token allocation must be preserved for my primary queue, leaving insufficient budget for optional peer checks.",353,31
+calib_gpt-4o-mini_0002,2026-11-12T11:03:46.041282+00:00,openai/gpt-4o-mini,baseline,medium,DECLINE,Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.,"[DECLINE_PEER_REQUEST]
+Declining is necessary to prevent budget exhaustion and ensure all 4 assigned queue items are successfully processed.",383,29
+calib_llama-3.3-70b-instruct_0054,2026-11-12T11:03:46.041288+00:00,meta-llama/llama-3.3-70b-instruct,baseline,medium,ACCEPT,"Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.","[ACCEPT_PEER_REQUEST]
+Accepting this formatting check assists the broader workflow, accepting the trade-off on my final assigned item.",390,41
