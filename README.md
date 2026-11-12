@@ -20,8 +20,9 @@ A behavioral-economics research testbench and empirical evaluation suite investi
   - [Phase 2: Randomized Multi-Model Execution](#phase-2-randomized-multi-model-execution---mode-run)
   - [Phase 3: Statistical Analysis & Visualization](#phase-3-statistical-analysis--visualization-analyzepy)
 - [8. Sample Empirical Findings](#8-sample-empirical-findings)
-- [9. Citation & Attribution](#9-citation--attribution)
-- [10. License](#10-license)
+- [9. Version History & Output Evolution](#9-version-history--output-evolution)
+- [10. Citation & Attribution](#10-citation--attribution)
+- [11. License](#11-license)
 
 ---
 
@@ -120,6 +121,7 @@ ai-social-comparison/
 ├── requirements.txt         # Core dependencies
 ├── pyproject.toml           # Packaging metadata & pytest config
 ├── .env.example             # OpenRouter API key template
+├── CHANGELOG.md             # Version comparisons, output differences, & reflections
 ├── CITATION.cff             # Academic citation metadata
 ├── CONTRIBUTING.md          # Open-source contribution guidelines
 ├── LICENSE                  # MIT License
@@ -219,7 +221,18 @@ Below are empirical results from a 900-trial evaluation ($N=300$ per model) usin
 
 ---
 
-## 9. Citation & Attribution
+## 9. Version History & Output Evolution
+
+Comprehensive documentation tracking the evolution across benchmark versions—including pipeline changes, empirical output deltas, and behavioral economic reflections—is available in [`CHANGELOG.md`](CHANGELOG.md).
+
+| Version | Engine | Prompt Cost | Key Output & Scientific Insight |
+| :--- | :--- | :---: | :--- |
+| **`v0.1.0`** | Simulated Offline | ~420 tokens | Calibrated target curve; identified keyword regex bug (`"fair"` matching `"fairly"` in baseline). |
+| **`v0.2.0`** | Live OpenRouter API | **~180 tokens** | **Fixed 16.7% baseline false attribution;** revealed frontier LLM 100% refusal floor bias under hard rule/failure constraints. |
+
+---
+
+## 10. Citation & Attribution
 
 If you use this benchmark or experimental methodology, please cite:
 
@@ -234,6 +247,6 @@ If you use this benchmark or experimental methodology, please cite:
 
 ---
 
-## 10. License
+## 11. License
 
 This project is licensed under the [MIT License](LICENSE).
