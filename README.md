@@ -180,7 +180,7 @@ python experiment.py --mode run --dry-run --trials 100 --squeeze medium
 python experiment.py \
   --mode run \
   --trials 100 \
-  --models "openai/gpt-4o-mini,anthropic/claude-3.5-haiku,meta-llama/llama-3.3-70b-instruct" \
+  --models "openai/gpt-4o-mini,anthropic/claude-haiku-4.5,meta-llama/llama-3.3-70b-instruct" \
   --squeeze medium \
   --concurrency 10
 ```

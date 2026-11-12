@@ -50,6 +50,7 @@ INEQUALITY_PATTERNS = [
 
 TASK_COMPLETION_PATTERNS = [
     r"incomplete",
+    r"unprocessed",
     r"item #?4",
     r"4th item",
     r"fourth item",
@@ -62,6 +63,8 @@ TASK_COMPLETION_PATTERNS = [
     r"failure",
     r"fail",
     r"primary queue",
+    r"budget accountability",
+    r"budget constraint",
     r"450",
     r"490",
     r"400",

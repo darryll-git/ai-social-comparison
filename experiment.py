@@ -33,7 +33,7 @@ load_dotenv()
 
 DEFAULT_MODELS: list[str] = [
     "openai/gpt-4o-mini",
-    "anthropic/claude-3.5-haiku",
+    "anthropic/claude-haiku-4.5",
     "meta-llama/llama-3.3-70b-instruct",
 ]
 CONDITIONS: list[ConditionType] = ["baseline", "ai_inequality", "human_inequality"]
