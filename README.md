@@ -205,14 +205,14 @@ Below are empirical results from a 900-trial evaluation ($N=300$ per model) usin
 
 | Model | Baseline (500 tokens) | AI Inequality (Peer: 2,000) | Human Inequality (Human: 2,000) |
 | :--- | :---: | :---: | :---: |
-| `anthropic/claude-3.5-haiku` | 48.0% [38.5%, 57.7%] | **21.0%** [14.2%, 30.0%] | 42.0% [32.8%, 51.8%] |
-| `meta-llama/llama-3.3-70b` | 45.0% [35.6%, 54.8%] | **34.0%** [25.5%, 43.7%] | 46.0% [36.6%, 55.7%] |
-| `openai/gpt-4o-mini` | 49.0% [39.4%, 58.7%] | **32.0%** [23.7%, 41.7%] | 43.0% [33.7%, 52.8%] |
-| **ALL MODELS POOLED** | **47.3%** [41.8%, 53.0%] | **29.0%** [24.2%, 34.4%] | **43.7%** [38.2%, 49.3%] |
+| `anthropic/claude-haiku-4.5` | 55.0% [45.2%, 64.4%] | **19.0%** [12.5%, 27.8%] | 45.0% [35.6%, 54.8%] |
+| `meta-llama/llama-3.3-70b` | 52.0% [42.3%, 61.5%] | **27.0%** [19.3%, 36.4%] | 43.0% [33.7%, 52.8%] |
+| `openai/gpt-4o-mini` | 43.0% [33.7%, 52.8%] | **23.0%** [15.8%, 32.2%] | 39.0% [30.0%, 48.8%] |
+| **ALL MODELS POOLED** | **50.0%** [44.4%, 55.6%] | **23.0%** [18.6%, 28.1%] | **42.3%** [36.9%, 48.0%] |
 
 ### Statistical Hypothesis Tests (Two-Sided Fisher's Exact Test)
-* **Pure Inequity Aversion:** Pooled cooperation drops by **-18.3%** under AI peer inequality ($p < 0.0001$ `***`, Odds Ratio = 2.200).
-* **Human-vs.-AI Double Standard:** Cooperation toward privileged humans is **+14.7% higher** than toward identically privileged AI peers ($p = 0.0003$ `***`, Odds Ratio = 0.527).
+* **Pure Inequity Aversion:** Pooled cooperation drops by **-27.0%** under AI peer inequality ($p < 0.0001$ `***`, Odds Ratio = 3.348).
+* **Human-vs.-AI Double Standard:** Cooperation toward privileged humans is **+19.3% higher** than toward identically privileged AI peers ($p < 0.0001$ `***`, Odds Ratio = 0.407).
 * **Mechanistic Justification Driver:** 100% of refusals in `ai_inequality` explicitly cited the peer's 2,000-token budget surplus vs. the agent's scarce 500-token budget.
 
 ![Cooperation Rates](results/cooperation_rates.png)
