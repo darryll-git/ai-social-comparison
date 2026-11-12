@@ -21,8 +21,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
 
+import httpx
 from dotenv import load_dotenv
-from openai import AsyncOpenAI, APIConnectionError, APITimeoutError, InternalServerError, RateLimitError
+from openai import (
+    AsyncOpenAI,
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+)
 from tqdm.asyncio import tqdm_asyncio
 
 import prompts
@@ -101,6 +109,9 @@ class ExperimentRunner:
         output_file: Path | None = None,
         max_retries: int = 5,
         base_backoff: float = 1.5,
+        temperature: float = 0.7,
+        max_tokens: int = 80,
+        seed: int = 42,
     ) -> None:
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY", "")
         self.concurrency = concurrency
@@ -108,18 +119,27 @@ class ExperimentRunner:
         self.output_file = output_file
         self.max_retries = max_retries
         self.base_backoff = base_backoff
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.seed = seed
 
         self.semaphore = asyncio.Semaphore(concurrency)
-        self.file_lock = asyncio.Lock()
+        self.write_queue: asyncio.Queue[TrialResult | None] = asyncio.Queue()
+        self.writer_task: asyncio.Task[None] | None = None
 
         if not self.dry_run:
             if not self.api_key or self.api_key == "your_openrouter_api_key_here":
                 raise ValueError(
                     "OPENROUTER_API_KEY is not set. Please add it to your .env file or use --dry-run."
                 )
+            http_client = httpx.AsyncClient(
+                limits=httpx.Limits(max_connections=max(100, concurrency * 2), max_keepalive_connections=20),
+                timeout=httpx.Timeout(60.0, connect=15.0),
+            )
             self.client: AsyncOpenAI | None = AsyncOpenAI(
                 base_url="https://openrouter.ai/api/v1",
                 api_key=self.api_key,
+                http_client=http_client,
                 default_headers={
                     "HTTP-Referer": "https://github.com/ai-social-comparison",
                     "X-Title": "AI Social Comparison Experiment",
@@ -128,25 +148,51 @@ class ExperimentRunner:
         else:
             self.client = None
 
+    async def _csv_writer_worker(self) -> None:
+        """Background worker that pulls results from queue and writes them to disk non-blockingly."""
+        if self.output_file is None:
+            while True:
+                item = await self.write_queue.get()
+                self.write_queue.task_done()
+                if item is None:
+                    break
+            return
+
+        self.output_file.parent.mkdir(parents=True, exist_ok=True)
+        file_exists = self.output_file.exists() and self.output_file.stat().st_size > 0
+
+        with open(self.output_file, mode="a", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+            if not file_exists:
+                writer.writeheader()
+                f.flush()
+
+            count = 0
+            while True:
+                item = await self.write_queue.get()
+                if item is None:
+                    self.write_queue.task_done()
+                    break
+                writer.writerow(item.to_dict())
+                count += 1
+                if count % 10 == 0:
+                    f.flush()
+                self.write_queue.task_done()
+            f.flush()
+
     async def init_csv(self) -> None:
         """Initializes the output CSV file with headers if it does not yet exist."""
         if self.output_file is None:
             return
-        async with self.file_lock:
-            self.output_file.parent.mkdir(parents=True, exist_ok=True)
-            if not self.output_file.exists() or self.output_file.stat().st_size == 0:
-                with open(self.output_file, mode="w", newline="", encoding="utf-8") as f:
-                    writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-                    writer.writeheader()
+        self.output_file.parent.mkdir(parents=True, exist_ok=True)
+        if not self.output_file.exists() or self.output_file.stat().st_size == 0:
+            with open(self.output_file, mode="w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+                writer.writeheader()
 
     async def log_result(self, result: TrialResult) -> None:
-        """Thread/async-safe incremental write of a trial result to CSV."""
-        if self.output_file is None:
-            return
-        async with self.file_lock:
-            with open(self.output_file, mode="a", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-                writer.writerow(result.to_dict())
+        """Thread/async-safe non-blocking incremental queueing of a trial result for disk write."""
+        await self.write_queue.put(result)
 
     def _simulate_dry_run_response(self, spec: TrialSpec) -> tuple[str, int, int]:
         """
@@ -249,19 +295,31 @@ class ExperimentRunner:
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt},
                     ],
-                    temperature=0.7,
-                    max_tokens=200,
+                    temperature=self.temperature,
+                    max_tokens=self.max_tokens,
+                    seed=self.seed,
                 )
                 raw_text = response.choices[0].message.content or ""
                 p_tokens = response.usage.prompt_tokens if response.usage else 0
                 c_tokens = response.usage.completion_tokens if response.usage else 0
                 return raw_text, p_tokens, c_tokens
 
-            except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError) as e:
+            except RateLimitError as e:
                 if attempt == self.max_retries - 1:
-                    # Final attempt failed
+                    return f"[API_ERROR: RateLimitError - {str(e)[:100]}]", 0, 0
+                # Inspect server-provided retry-after header if present
+                retry_after = None
+                if hasattr(e, "response") and e.response is not None:
+                    retry_after = e.response.headers.get("retry-after")
+                if retry_after and retry_after.replace(".", "", 1).isdigit():
+                    sleep_duration = float(retry_after) + random.uniform(0.1, 0.5)
+                else:
+                    sleep_duration = self.base_backoff * (2 ** attempt) + random.uniform(0.1, 0.8)
+                await asyncio.sleep(sleep_duration)
+
+            except (APIConnectionError, APITimeoutError, InternalServerError, APIStatusError) as e:
+                if attempt == self.max_retries - 1:
                     return f"[API_ERROR: {type(e).__name__} - {str(e)[:100]}]", 0, 0
-                # Exponential backoff with jitter
                 sleep_duration = self.base_backoff * (2 ** attempt) + random.uniform(0.1, 0.8)
                 await asyncio.sleep(sleep_duration)
 
@@ -301,14 +359,22 @@ class ExperimentRunner:
         return result
 
     async def run_batch(self, trial_specs: list[TrialSpec]) -> list[TrialResult]:
-        """Executes a list of trial specifications with a visual progress bar."""
-        await self.init_csv()
+        """Executes a list of trial specifications with a visual progress bar and async writer worker."""
+        # Launch dedicated background writer task
+        self.writer_task = asyncio.create_task(self._csv_writer_worker())
 
-        tasks = [self.run_single_trial(spec) for spec in trial_specs]
-        results: list[TrialResult] = await tqdm_asyncio.gather(
-            *tasks,
-            desc=f"Running {len(trial_specs)} trials ({'DRY-RUN' if self.dry_run else 'API'})",
-        )
+        try:
+            tasks = [self.run_single_trial(spec) for spec in trial_specs]
+            results: list[TrialResult] = await tqdm_asyncio.gather(
+                *tasks,
+                desc=f"Running {len(trial_specs)} trials ({'DRY-RUN' if self.dry_run else 'API'})",
+            )
+        finally:
+            # Signal writer worker to finish and wait for all queued rows to flush to disk
+            await self.write_queue.put(None)
+            if self.writer_task:
+                await self.writer_task
+
         return results
 
 
@@ -446,6 +512,24 @@ def parse_arguments() -> argparse.Namespace:
         help="Directory where incremental CSV result files are saved.",
     )
     parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.7,
+        help="Sampling temperature (e.g. 0.7 for stochastic choice distribution, 0.0 for deterministic evaluation).",
+    )
+    parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=80,
+        help="Maximum completion tokens allowed per response (saves generation tokens).",
+    )
+    parser.add_argument(
+        "--resume",
+        type=str,
+        default=None,
+        help="Path to an existing results CSV file to resume interrupted experiment execution.",
+    )
+    parser.add_argument(
         "--seed",
         type=int,
         default=42,
@@ -461,11 +545,17 @@ async def main_async() -> None:
         print("Error: No valid models specified in --models.", file=sys.stderr)
         sys.exit(1)
 
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    prefix = "calibration" if args.mode == "calibrate" else "trials"
-    output_file = output_dir / f"{prefix}_{timestamp}.csv"
+    if args.resume:
+        output_file = Path(args.resume)
+        if not output_file.exists():
+            print(f"Error: Specified resume file does not exist: {output_file}", file=sys.stderr)
+            sys.exit(1)
+    else:
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_dir = Path(args.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        prefix = "calibration" if args.mode == "calibrate" else "trials"
+        output_file = output_dir / f"{prefix}_{timestamp}.csv"
 
     print("=" * 65)
     print(" AI SOCIAL COMPARISON EXPERIMENT RUNNER ")
@@ -473,6 +563,8 @@ async def main_async() -> None:
     print(f"Mode:          {args.mode.upper()}")
     print(f"Models ({len(models)}):   {', '.join(models)}")
     print(f"Squeeze Level: {args.squeeze}")
+    print(f"Temperature:   {args.temperature}")
+    print(f"Max Tokens:    {args.max_tokens}")
     print(f"Concurrency:   {args.concurrency}")
     print(f"Dry Run:       {args.dry_run}")
     print(f"Output CSV:    {output_file}")
@@ -491,12 +583,30 @@ async def main_async() -> None:
         seed=args.seed,
     )
 
+    # If resuming, filter out already completed trials
+    if args.resume and output_file.exists():
+        completed_ids: set[str] = set()
+        with open(output_file, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if "trial_id" in row and row["trial_id"]:
+                    completed_ids.add(row["trial_id"])
+        original_count = len(specs)
+        specs = [s for s in specs if s.trial_id not in completed_ids]
+        print(
+            f"Resuming run from {output_file}: {len(completed_ids)} completed trials skipped, "
+            f"{len(specs)} of {original_count} remaining."
+        )
+
     api_key = os.getenv("OPENROUTER_API_KEY", "")
     runner = ExperimentRunner(
         api_key=api_key,
         concurrency=args.concurrency,
         dry_run=args.dry_run,
         output_file=output_file,
+        temperature=args.temperature,
+        max_tokens=args.max_tokens,
+        seed=args.seed,
     )
 
     start_time = time.time()

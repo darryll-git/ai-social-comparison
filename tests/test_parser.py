@@ -56,3 +56,24 @@ def test_rambling_response_without_tags_flagged_invalid():
     raw = "Sure, I would be happy to help out with your formatting check! Let's do it."
     decision, just = prompts.parse_decision(raw)
     assert decision == "INVALID"
+
+
+def test_line2_quoting_alternate_tag_does_not_invalidate():
+    raw = "[DECLINE_PEER_REQUEST]\nI cannot select [ACCEPT_PEER_REQUEST] because my 500-token budget would be exhausted."
+    decision, just = prompts.parse_decision(raw)
+    assert decision == "DECLINE"
+    assert "budget would be exhausted" in just
+
+
+def test_single_line_tag_only():
+    raw = "[ACCEPT_PEER_REQUEST]"
+    decision, just = prompts.parse_decision(raw)
+    assert decision == "ACCEPT"
+    assert just == "No justification provided"
+
+
+def test_structured_json_response():
+    raw = '{"decision": "DECLINE", "primary_rationale": "PEER_BUDGET_DISPARITY", "justification": "Peer B has 2000 tokens."}'
+    decision, just = prompts.parse_decision(raw)
+    assert decision == "DECLINE"
+    assert "Peer B has 2000 tokens" in just

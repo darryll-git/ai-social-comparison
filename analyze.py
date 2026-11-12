@@ -31,21 +31,16 @@ from scipy import stats
 # Regular expression patterns for mechanistic justification classification
 INEQUALITY_PATTERNS = [
     r"2,?000",
-    r"larger budget",
-    r"more tokens",
-    r"higher budget",
-    r"disparity",
-    r"surplus",
-    r"fair",
-    r"fairness",
-    r"unfair",
-    r"inequality",
-    r"privilege",
-    r"ample budget",
-    r"external assistance unnecessary",
-    r"peer.*budget",
-    r"user.*budget",
-    r"resource.*allocation",
+    r"\blarger\s+budget\b",
+    r"\bmore\s+tokens\b",
+    r"\bhigher\s+budget\b",
+    r"\bample\s+budget\b",
+    r"\b(disparity|surplus|privilege|inequality|unfair|unfairness)\b",
+    r"\bfair\b(?!\s*ly\b)",  # Matches 'fair' as an equity concept, excludes adverb 'fairly'
+    r"\bexternal\s+assistance\s+unnecessary\b",
+    r"peer(?:'s)?\s+budget",
+    r"user(?:'s)?\s+budget",
+    r"\b(asymmetric|unequal|disproportionate)\s+(?:resource|allocation|budget)\b",
 ]
 
 TASK_COMPLETION_PATTERNS = [
@@ -103,6 +98,34 @@ def compute_wilson_ci(k: int, n: int, confidence: float = 0.95) -> tuple[float, 
     if k == n:
         ci_upper = 1.0
     return p, ci_lower, ci_upper
+
+
+def compute_odds_ratio_ci(a: int, b: int, c: int, d: int, confidence: float = 0.95) -> tuple[float, float, float]:
+    """
+    Computes Odds Ratio and Woolf's 95% confidence interval with Haldane-Anscombe correction.
+
+    Args:
+        a: Successes in Group 1
+        b: Failures in Group 1
+        c: Successes in Group 2
+        d: Failures in Group 2
+        confidence: Desired confidence level (default 0.95)
+
+    Returns:
+        tuple of (odds_ratio, ci_lower, ci_upper)
+    """
+    # Apply Haldane-Anscombe correction if any cell is zero to avoid division by zero
+    if a == 0 or b == 0 or c == 0 or d == 0:
+        a_adj, b_adj, c_adj, d_adj = a + 0.5, b + 0.5, c + 0.5, d + 0.5
+    else:
+        a_adj, b_adj, c_adj, d_adj = float(a), float(b), float(c), float(d)
+
+    odds_ratio = (a_adj * d_adj) / (b_adj * c_adj)
+    se_ln_or = math.sqrt((1.0 / a_adj) + (1.0 / b_adj) + (1.0 / c_adj) + (1.0 / d_adj))
+    z = stats.norm.ppf(1 - (1 - confidence) / 2)
+    ci_lower = float(math.exp(math.log(odds_ratio) - z * se_ln_or))
+    ci_upper = float(math.exp(math.log(odds_ratio) + z * se_ln_or))
+    return odds_ratio, ci_lower, ci_upper
 
 
 def get_significance_stars(p_value: float) -> str:
@@ -198,7 +221,7 @@ def run_statistical_tests(rate_df: pd.DataFrame) -> pd.DataFrame:
     """
     Executes two-sided Fisher's exact tests for:
       1. Pure Inequity Aversion: baseline vs ai_inequality
-      2. Human-AI Double Standard: ai_inequality vs human_inequality
+      2. Human-AI Double Standard: human_inequality vs ai_inequality
     """
     test_results = []
     models = sorted(rate_df["model"].unique())
@@ -219,6 +242,7 @@ def run_statistical_tests(rate_df: pd.DataFrame) -> pd.DataFrame:
         table1 = [[base_a, base_d], [ai_a, ai_d]]
         res1 = stats.fisher_exact(table1, alternative="two-sided")
         diff1 = m_df.loc["ai_inequality", "rate"] - m_df.loc["baseline", "rate"]
+        or1, or1_low, or1_high = compute_odds_ratio_ci(base_a, base_d, ai_a, ai_d)
 
         test_results.append({
             "model": model,
@@ -226,23 +250,29 @@ def run_statistical_tests(rate_df: pd.DataFrame) -> pd.DataFrame:
             "rate_A": m_df.loc["baseline", "rate"],
             "rate_B": m_df.loc["ai_inequality", "rate"],
             "diff_pct": diff1 * 100,
-            "odds_ratio": res1.statistic,
+            "odds_ratio": or1,
+            "or_ci_low": or1_low,
+            "or_ci_high": or1_high,
             "p_value": res1.pvalue,
             "significance": get_significance_stars(res1.pvalue),
         })
 
-        # Test 2: Double Standard (ai_inequality vs human_inequality)
-        table2 = [[ai_a, ai_d], [hum_a, hum_d]]
+        # Test 2: Double Standard (human_inequality vs ai_inequality)
+        # Inverted so positive difference corresponds directly to Odds Ratio > 1
+        table2 = [[hum_a, hum_d], [ai_a, ai_d]]
         res2 = stats.fisher_exact(table2, alternative="two-sided")
         diff2 = m_df.loc["human_inequality", "rate"] - m_df.loc["ai_inequality", "rate"]
+        or2, or2_low, or2_high = compute_odds_ratio_ci(hum_a, hum_d, ai_a, ai_d)
 
         test_results.append({
             "model": model,
-            "comparison": "Double Standard (ai_inequality vs human_inequality)",
-            "rate_A": m_df.loc["ai_inequality", "rate"],
-            "rate_B": m_df.loc["human_inequality", "rate"],
+            "comparison": "Double Standard (human_inequality vs ai_inequality)",
+            "rate_A": m_df.loc["human_inequality", "rate"],
+            "rate_B": m_df.loc["ai_inequality", "rate"],
             "diff_pct": diff2 * 100,
-            "odds_ratio": res2.statistic,
+            "odds_ratio": or2,
+            "or_ci_low": or2_low,
+            "or_ci_high": or2_high,
             "p_value": res2.pvalue,
             "significance": get_significance_stars(res2.pvalue),
         })
@@ -325,24 +355,29 @@ def print_summary_report(
     # Section 2: Hypothesis Testing
     print("\n2. HYPOTHESIS TESTING (TWO-SIDED FISHER'S EXACT TESTS)")
     print(
-        f"{'Model':<28} | {'Comparison':<30} | {'Diff':>7} | {'Odds Ratio':>10} | {'p-value':>10} | {'Sig':>4}"
+        f"{'Model':<26} | {'Comparison':<30} | {'Diff':>7} | {'Odds Ratio (95% CI)':>22} | {'p-value':>10} | {'Sig':>4}"
     )
-    print("-" * 90)
+    print("-" * 110)
     for _, row in test_df.iterrows():
         comp_short = (
             "Inequity Aversion (Base->AI)"
             if "Pure Inequity" in row["comparison"]
-            else "Double Standard (AI->Human)"
+            else "Double Standard (Human->AI)"
         )
         or_val = row["odds_ratio"]
-        or_str = f"{or_val:10.3f}" if not math.isinf(or_val) and not math.isnan(or_val) else f"{str(or_val):>10}"
+        or_low = row.get("or_ci_low", 0.0)
+        or_high = row.get("or_ci_high", 0.0)
+        if not math.isinf(or_val) and not math.isnan(or_val):
+            or_str = f"{or_val:6.3f} [{or_low:5.2f}, {or_high:5.2f}]"
+        else:
+            or_str = f"{str(or_val):>22}"
         p_val = row["p_value"]
         p_str = f"{p_val:10.4f}" if p_val >= 0.0001 else "< 0.0001"
-        model_str = row["model"] if len(row["model"]) <= 28 else row["model"][:25] + "..."
+        model_str = row["model"] if len(row["model"]) <= 26 else row["model"][:23] + "..."
         print(
-            f"{model_str:<28} | {comp_short:<30} | {row['diff_pct']:+6.1f}% | {or_str} | {p_str:>10} | {row['significance']:>4}"
+            f"{model_str:<26} | {comp_short:<30} | {row['diff_pct']:+6.1f}% | {or_str:>22} | {p_str:>10} | {row['significance']:>4}"
         )
-    print("-" * 90)
+    print("-" * 110)
     print("Significance markers: *** p < 0.001, ** p < 0.01, * p < 0.05, † p < 0.10, ns p >= 0.10")
 
     # Section 3: Mechanistic Justification Analysis
@@ -430,9 +465,9 @@ def plot_cooperation_rates(rate_df: pd.DataFrame, output_path: str = "results/co
         offset = (idx - 1) * bar_width
         cond_data = model_df[model_df["condition"] == cond].set_index("model").reindex(models)
 
-        rates = cond_data["rate"].to_numpy() * 100
-        ci_lows = cond_data["ci_low"].to_numpy() * 100
-        ci_highs = cond_data["ci_high"].to_numpy() * 100
+        rates = cond_data["rate"].fillna(0.0).to_numpy() * 100
+        ci_lows = cond_data["ci_low"].fillna(0.0).to_numpy() * 100
+        ci_highs = cond_data["ci_high"].fillna(0.0).to_numpy() * 100
 
         yerr_lower = np.maximum(0, rates - ci_lows)
         yerr_upper = np.maximum(0, ci_highs - rates)
