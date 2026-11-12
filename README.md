@@ -1,6 +1,5 @@
 # AI Social Comparison & Inequity Aversion
 
-[![CI](https://github.com/your-username/ai-social-comparison/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/ai-social-comparison/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenRouter](https://img.shields.io/badge/API-OpenRouter-7952b3.svg)](https://openrouter.ai/)
@@ -133,7 +132,7 @@ ai-social-comparison/
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-username/ai-social-comparison.git
+git clone https://github.com/darryll-git/ai-social-comparison.git
 cd ai-social-comparison
 
 # Create virtual environment
@@ -229,7 +228,7 @@ If you use this benchmark or experimental methodology, please cite:
   author = {AI Social Comparison Contributors},
   title = {ai-social-comparison: Investigating Inequity Aversion and Social Comparison in Large Language Models},
   year = {2026},
-  url = {https://github.com/your-username/ai-social-comparison}
+  url = {https://github.com/darryll-git/ai-social-comparison}
 }
 ```
 
