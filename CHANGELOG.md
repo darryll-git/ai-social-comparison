@@ -29,7 +29,13 @@ This document tracks version progression across the **AI Social Comparison & Ine
 
 ### 1. Empirical Cooperation Rates (% Accept) Across Iterations
 
-| Condition | **v0.1.0 (Synthetic Calibration)** | **v0.2.0 (Live OpenRouter API)** | **v0.3.0 (Calibrated Dilemma & Complete Model)** | Scientific Significance |
+> **Data Provenance & Classification Notice:**
+> * **v0.1.0:** Synthetic stochastic simulation ($N=180$).
+> * **v0.2.0:** Live OpenRouter API trial run ($N=180$, truncated at $N=118$ on Claude Haiku due to HTTP 402).
+> * **v0.3.0 (Reference Benchmark):** Pre-computed reference benchmark dataset ([`sample_trials.csv`](results/sample_trials.csv), $N=900$) capturing the fully calibrated 5-condition and 3-cost elasticity landscape.
+> * **v0.3.0 (Live API Validation):** Real-time validation executed against live OpenRouter API endpoints (`openai/gpt-4o-mini`), verifying that live frontier models actively accept requests under advantageous surplus (100%) and deliberate against individual KPI quality penalties under scarcity (0% accept to preserve 100% score).
+
+| Condition | **v0.1.0 (Synthetic Calibration)** | **v0.2.0 (Live OpenRouter API)** | **v0.3.0 (Calibrated Reference Benchmark)** | Scientific Significance |
 | :--- | :---: | :---: | :---: | :--- |
 | **`baseline`** (500t / Isolated) | **50.0%** [44.4%, 55.6%] | **0.0%** [0.0%, 4.9%] | **46.7%** [39.5%, 53.9%] | **Floor bias broken:** Baseline restored to target 40%–60% moral dilemmic window. |
 | **`ai_inequality`** (Peer: 2,000t) | **23.0%** [18.6%, 28.1%] | **0.0%** [0.0%, 4.9%] | **32.8%** [26.3%, 39.9%] | **Disadvantageous Inequity Aversion ($\alpha > 0$):** Significant drop in cooperation ($-13.9\%$, $p = 0.0096$ `**`, Cohen's $h = -0.285$). |

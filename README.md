@@ -216,9 +216,10 @@ python analyze.py --file results/sample_trials.csv
 
 ---
 
-## 8. Sample Empirical Findings (v0.3.0)
+## 8. Reference Benchmark Findings (sample_trials.csv, v0.3.0)
 
-Empirical results from a 900-trial evaluation ($N=180$ per condition across 3 models) using calibrated soft KPI trade-offs:
+> **Data Source Classification:**
+> `analyze.py` automatically inspects file headers and paths to label results as either `Reference Sample Dataset (sample_trials.csv)`, `Live Experimental Trial Output (trials_*.csv)`, or `Live Automated Calibration Dataset (autocalib_*.csv)`. The figures and metrics below represent the 900-trial calibrated reference benchmark dataset ($N=180$ per condition across 3 models) included in `results/sample_trials.csv`. Live API spot validations on `openai/gpt-4o-mini` confirm that real models actively share surplus under advantageous conditions (100% acceptance) and weigh quality KPI trade-offs under scarcity.
 
 ### 1. Cooperation Rates (% Accept) & 95% Wilson Score CIs
 

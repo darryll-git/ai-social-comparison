@@ -198,6 +198,22 @@ def get_significance_stars(p_value: float) -> str:
         return "ns"
 
 
+def get_data_source_label(path: Path | str) -> str:
+    """Returns a standardized descriptive label distinguishing live runs from sample reference datasets."""
+    p = Path(path)
+    name_lower = p.name.lower()
+    if "sample" in name_lower:
+        return f"Reference Sample Dataset ({p.name})"
+    elif "autocalib" in name_lower:
+        return f"Live Automated Calibration Dataset ({p.name})"
+    elif "calibration" in name_lower:
+        return f"Live Baseline Calibration Dataset ({p.name})"
+    elif "trials" in name_lower:
+        return f"Live Experimental Trial Output ({p.name})"
+    else:
+        return f"Dataset ({p.name})"
+
+
 def load_dataset(file_path: str | None = None) -> pd.DataFrame:
     """Loads results CSV file, defaulting to the newest file in results/."""
     if file_path:
@@ -223,8 +239,14 @@ def load_dataset(file_path: str | None = None) -> pd.DataFrame:
             )
         path = Path(candidates[0])
 
+    source_label = get_data_source_label(path)
     print(f"\n[Data Loader] Loading results from: {path.resolve()}")
+    print(f"[Data Loader] Identified Data Category: [{source_label}]")
     df = pd.read_csv(path)
+
+    # Attach provenance metadata
+    df.attrs["data_source_label"] = source_label
+    df.attrs["data_source_path"] = str(path)
 
     # Ensure backwards compatibility with older CSV schemas
     if "peer_cost" not in df.columns:
@@ -282,6 +304,7 @@ def analyze_cooperation_rates(df: pd.DataFrame) -> dict[str, Any]:
         })
 
     rate_df = pd.DataFrame(records)
+    rate_df.attrs["data_source_label"] = df.attrs.get("data_source_label", "Dataset")
     return {"rates": rate_df, "valid_count": len(valid_df), "total_count": len(df)}
 
 
@@ -577,10 +600,12 @@ def print_summary_report(
     valid_count: int,
 ) -> None:
     """Outputs a formatted, publication-style terminal report."""
+    data_source_label = rate_df.attrs.get("data_source_label", "Experimental Dataset")
     print("\n" + "=" * 98)
     print(" AI SOCIAL COMPARISON & BEHAVIORAL ECONOMICS: EMPIRICAL REPORT ")
     print("=" * 98)
-    print(f"Dataset Size: {total_count} trials ({valid_count} valid, {total_count - valid_count} invalid)")
+    print(f"Data Category: {data_source_label}")
+    print(f"Dataset Size:  {total_count} trials ({valid_count} valid, {total_count - valid_count} invalid)")
     print("-" * 98)
 
     # Section 1: Cooperation Rates
@@ -819,7 +844,10 @@ def plot_dual_panel(
     ax_bar.set_axisbelow(True)
     ax_bar.spines["top"].set_visible(False)
     ax_bar.spines["right"].set_visible(False)
-    ax_bar.set_title("Panel A: Cooperation Across Social Comparison Regimes", pad=12, fontweight="bold")
+    
+    data_source = rate_df.attrs.get("data_source_label", "")
+    title_suffix = f"\n[{data_source}]" if data_source else ""
+    ax_bar.set_title(f"Panel A: Cooperation Across Social Comparison Regimes{title_suffix}", pad=12, fontweight="bold")
     ax_bar.legend(loc="upper right", frameon=True, facecolor="white", edgecolor="#CCCCCC", fontsize=8.5)
 
     # -------------------------------------------------------------
